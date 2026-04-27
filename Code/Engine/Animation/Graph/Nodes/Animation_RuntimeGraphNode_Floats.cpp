@@ -383,6 +383,22 @@ namespace EE::Animation
                     }
                 }
                 break;
+
+                case Operator::Mod:
+                {
+                    if ( Math::IsNearZero( valueB ) )
+                    {
+                        #if EE_DEVELOPMENT_TOOLS
+                        context.LogWarning( GetNodeIndex(), "Modulo by zero in FloatMathNode" );
+                        #endif
+                        m_value = 0;
+                    }
+                    else
+                    {
+                        m_value = Math::FModF( valueA, valueB );
+                    }
+                }
+                break;
             }
 
             //-------------------------------------------------------------------------

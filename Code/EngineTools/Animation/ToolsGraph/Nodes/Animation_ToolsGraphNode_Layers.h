@@ -94,4 +94,21 @@ namespace EE::Animation
 
         EE_REFLECT() bool                              m_onlySampleBaseRootMotion = true;
     };
+
+    //-------------------------------------------------------------------------
+
+    // Compatibility stub for Valve graphs that use a simple pose scaling/masking node.
+    class ScaleToolsNode final : public FlowToolsNode
+    {
+        EE_REFLECT_TYPE( ScaleToolsNode );
+
+    public:
+
+        ScaleToolsNode();
+
+        virtual char const* GetTypeName() const override { return "Scale"; }
+        virtual char const* GetCategory() const override { return "Animation/Layers"; }
+        virtual TBitFlags<GraphType> GetAllowedParentGraphTypes() const override { return TBitFlags<GraphType>( GraphType::BlendTree ); }
+        virtual int16_t Compile( GraphCompilationContext& context ) const override;
+    };
 }

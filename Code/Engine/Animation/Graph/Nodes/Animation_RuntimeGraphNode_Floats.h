@@ -184,6 +184,7 @@ namespace EE::Animation
             Sub,
             Mul,
             Div,
+            Mod,
         };
 
         struct EE_ENGINE_API Definition final : public FloatValueNode::Definition

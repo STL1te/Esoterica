@@ -73,4 +73,20 @@ namespace EE::Animation
         EE_REFLECT();
         TVector<Mapping>                 m_mappings;
     };
+
+    //-------------------------------------------------------------------------
+
+    class IDSwitchToolsNode final : public FlowToolsNode
+    {
+        EE_REFLECT_TYPE( IDSwitchToolsNode );
+
+    public:
+
+        IDSwitchToolsNode();
+
+        virtual char const* GetTypeName() const override { return "ID Switch"; }
+        virtual char const* GetCategory() const override { return "Values/ID"; }
+        virtual TBitFlags<GraphType> GetAllowedParentGraphTypes() const override { return TBitFlags<GraphType>( GraphType::BlendTree, GraphType::ValueTree, GraphType::TransitionConduit ); }
+        virtual int16_t Compile( GraphCompilationContext& context ) const override;
+    };
 }

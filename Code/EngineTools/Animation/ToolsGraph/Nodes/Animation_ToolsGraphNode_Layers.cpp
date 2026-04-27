@@ -396,4 +396,29 @@ namespace EE::Animation
             }
         }
     }
+
+    //-------------------------------------------------------------------------
+
+    ScaleToolsNode::ScaleToolsNode()
+        : FlowToolsNode()
+    {
+        CreateOutputPin( "Result", GraphValueType::Pose );
+        CreateInputPin( "Input", GraphValueType::Pose );
+        CreateInputPin( "Mask", GraphValueType::BoneMask );
+        CreateInputPin( "Enable", GraphValueType::Bool );
+    }
+
+    int16_t ScaleToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        // Compatibility fallback: preserve the serialized Valve node shape for editor load.
+        // At compile time we transparently forward the input pose until a native implementation exists.
+        auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 0 );
+        if ( pInputNode != nullptr )
+        {
+            return pInputNode->Compile( context );
+        }
+
+        context.LogError( this, "Disconnected input pin on compatibility Scale node!" );
+        return InvalidIndex;
+    }
 }

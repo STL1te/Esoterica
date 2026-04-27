@@ -326,6 +326,10 @@ namespace EE::Animation
             case FloatMathNode::Operator::Div:
             ImGui::Text( "A / ");
             break;
+
+            case FloatMathNode::Operator::Mod:
+            ImGui::Text( "A %% " );
+            break;
         }
 
         ImGui::SameLine();

@@ -109,4 +109,50 @@ namespace EE::Animation
 
         *reinterpret_cast<float*>( pOutValue ) = m_value;
     }
+
+    //-------------------------------------------------------------------------
+
+    void IDSwitchNode::Definition::InstantiateNode( InstantiationContext const& context, InstantiationOptions options ) const
+    {
+        auto pNode = CreateNode<IDSwitchNode>( context, options );
+        context.SetNodePtrFromIndex( m_switchValueNodeIdx, pNode->m_pSwitchValueNode );
+        context.SetNodePtrFromIndex( m_trueValueNodeIdx, pNode->m_pTrueValueNode );
+        context.SetNodePtrFromIndex( m_falseValueNodeIdx, pNode->m_pFalseValueNode );
+    }
+
+    void IDSwitchNode::InitializeInternal( GraphContext& context )
+    {
+        IDValueNode::InitializeInternal( context );
+        m_pSwitchValueNode->Initialize( context );
+        m_pTrueValueNode->Initialize( context );
+        m_pFalseValueNode->Initialize( context );
+        m_value.Clear();
+    }
+
+    void IDSwitchNode::ShutdownInternal( GraphContext& context )
+    {
+        m_pSwitchValueNode->Shutdown( context );
+        m_pTrueValueNode->Shutdown( context );
+        m_pFalseValueNode->Shutdown( context );
+        IDValueNode::ShutdownInternal( context );
+    }
+
+    void IDSwitchNode::GetValueInternal( GraphContext& context, void* pOutValue )
+    {
+        if ( !WasUpdated( context ) )
+        {
+            MarkNodeActive( context );
+
+            if ( m_pSwitchValueNode->GetValue<bool>( context ) )
+            {
+                m_value = m_pTrueValueNode->GetValue<StringID>( context );
+            }
+            else
+            {
+                m_value = m_pFalseValueNode->GetValue<StringID>( context );
+            }
+        }
+
+        *reinterpret_cast<StringID*>( pOutValue ) = m_value;
+    }
 }

@@ -226,4 +226,86 @@ namespace EE::Animation
             }
         }
     }
+
+    //-------------------------------------------------------------------------
+
+    IDSwitchToolsNode::IDSwitchToolsNode()
+        : FlowToolsNode()
+    {
+        CreateOutputPin( "Result", GraphValueType::ID, true );
+        CreateInputPin( "Bool", GraphValueType::Bool );
+        CreateInputPin( "If True", GraphValueType::ID );
+        CreateInputPin( "If False", GraphValueType::ID );
+    }
+
+    int16_t IDSwitchToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        IDSwitchNode::Definition* pDefinition = nullptr;
+        NodeCompilationState const state = context.GetDefinition<IDSwitchNode>( this, pDefinition );
+        if ( state == NodeCompilationState::NeedCompilation )
+        {
+            auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 0 );
+            if ( pInputNode != nullptr )
+            {
+                int16_t const compiledNodeIdx = pInputNode->Compile( context );
+                if ( compiledNodeIdx != InvalidIndex )
+                {
+                    pDefinition->m_switchValueNodeIdx = compiledNodeIdx;
+                }
+                else
+                {
+                    return InvalidIndex;
+                }
+            }
+            else
+            {
+                context.LogError( this, "Disconnected input pin!" );
+                return InvalidIndex;
+            }
+
+            //-------------------------------------------------------------------------
+
+            pInputNode = GetConnectedInputNode<FlowToolsNode>( 1 );
+            if ( pInputNode != nullptr )
+            {
+                int16_t const compiledNodeIdx = pInputNode->Compile( context );
+                if ( compiledNodeIdx != InvalidIndex )
+                {
+                    pDefinition->m_trueValueNodeIdx = compiledNodeIdx;
+                }
+                else
+                {
+                    return InvalidIndex;
+                }
+            }
+            else
+            {
+                context.LogError( this, "Disconnected input pin!" );
+                return InvalidIndex;
+            }
+
+            //-------------------------------------------------------------------------
+
+            pInputNode = GetConnectedInputNode<FlowToolsNode>( 2 );
+            if ( pInputNode != nullptr )
+            {
+                int16_t const compiledNodeIdx = pInputNode->Compile( context );
+                if ( compiledNodeIdx != InvalidIndex )
+                {
+                    pDefinition->m_falseValueNodeIdx = compiledNodeIdx;
+                }
+                else
+                {
+                    return InvalidIndex;
+                }
+            }
+            else
+            {
+                context.LogError( this, "Disconnected input pin!" );
+                return InvalidIndex;
+            }
+        }
+
+        return pDefinition->m_nodeIdx;
+    }
 }
