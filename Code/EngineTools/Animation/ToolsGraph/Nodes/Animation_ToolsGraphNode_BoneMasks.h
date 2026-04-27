@@ -100,4 +100,29 @@ namespace EE::Animation
         EE_REFLECT();
         Seconds                                m_blendTime = 0.1f;
     };
+
+    //-------------------------------------------------------------------------
+
+    // Compatibility stub for Valve graphs that use a simple bool-driven bone mask switch.
+    class BoneMaskSwitchToolsNode final : public FlowToolsNode
+    {
+        EE_REFLECT_TYPE( BoneMaskSwitchToolsNode );
+
+    public:
+
+        BoneMaskSwitchToolsNode();
+
+        virtual char const* GetTypeName() const override { return "Bone Mask Switch"; }
+        virtual char const* GetCategory() const override { return "Values/Bone Mask"; }
+        virtual TBitFlags<GraphType> GetAllowedParentGraphTypes() const override { return TBitFlags<GraphType>( GraphType::ValueTree, GraphType::TransitionConduit, GraphType::BlendTree ); }
+        virtual int16_t Compile( GraphCompilationContext& context ) const override;
+
+    private:
+
+        EE_REFLECT();
+        bool                                   m_switchDynamically = false;
+
+        EE_REFLECT();
+        Seconds                                m_blendTime = 0.1f;
+    };
 }

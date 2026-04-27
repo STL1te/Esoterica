@@ -354,4 +354,35 @@ namespace EE::Animation
             pInputPin->m_name = m_parameterValues[optionIdx].IsValid() ? m_parameterValues[optionIdx].c_str() : "Invalid ID";
         }
     }
+
+    //-------------------------------------------------------------------------
+
+    BoneMaskSwitchToolsNode::BoneMaskSwitchToolsNode()
+        : FlowToolsNode()
+    {
+        CreateOutputPin( "Result", GraphValueType::BoneMask, true );
+        CreateInputPin( "Bool", GraphValueType::Bool );
+        CreateInputPin( "If True", GraphValueType::BoneMask );
+        CreateInputPin( "If False", GraphValueType::BoneMask );
+    }
+
+    int16_t BoneMaskSwitchToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        // Compatibility fallback: we preserve the serialized node shape for editor load,
+        // and when compilation happens we forward one of the connected masks.
+        auto pPreferredMaskNode = GetConnectedInputNode<FlowToolsNode>( 1 );
+        if ( pPreferredMaskNode != nullptr )
+        {
+            return pPreferredMaskNode->Compile( context );
+        }
+
+        auto pFallbackMaskNode = GetConnectedInputNode<FlowToolsNode>( 2 );
+        if ( pFallbackMaskNode != nullptr )
+        {
+            return pFallbackMaskNode->Compile( context );
+        }
+
+        context.LogError( this, "Disconnected mask pins on compatibility Bone Mask Switch node!" );
+        return InvalidIndex;
+    }
 }

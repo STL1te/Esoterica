@@ -93,4 +93,83 @@ namespace EE::Animation
             GetInputPin( i )->m_name = newPinName;
         }
     }
+
+    //-------------------------------------------------------------------------
+
+    AimCSToolsNode::AimCSToolsNode()
+        : FlowToolsNode()
+    {
+        CreateOutputPin( "Result", GraphValueType::Pose, true );
+        CreateInputPin( "Input", GraphValueType::Pose );
+        CreateInputPin( "Horizontal Aim Angle", GraphValueType::Float );
+        CreateInputPin( "Vertical Aim Angle", GraphValueType::Float );
+        CreateInputPin( "Weapon Category", GraphValueType::ID );
+        CreateInputPin( "Weapon Type", GraphValueType::ID );
+        CreateInputPin( "Weapon Action", GraphValueType::ID );
+        CreateInputPin( "Weapon Drop", GraphValueType::Float );
+        CreateInputPin( "Crouch Weight", GraphValueType::Float );
+        CreateInputPin( "Is Defusing", GraphValueType::Bool );
+    }
+
+    int16_t AimCSToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 0 );
+        if ( pInputNode != nullptr )
+        {
+            return pInputNode->Compile( context );
+        }
+
+        context.LogError( this, "Disconnected input pin on compatibility Aim CS node!" );
+        return InvalidIndex;
+    }
+
+    //-------------------------------------------------------------------------
+
+    FootIKToolsNode::FootIKToolsNode()
+        : VariationDataToolsNode()
+    {
+        CreateOutputPin( "Result", GraphValueType::Pose, true );
+        CreateInputPin( "Input", GraphValueType::Pose );
+        CreateInputPin( "Left Foot Target", GraphValueType::Target );
+        CreateInputPin( "Right Foot Target", GraphValueType::Target );
+        CreateInputPin( "Enabled", GraphValueType::Bool );
+
+        m_defaultVariationData.CreateInstance( GetVariationDataTypeInfo() );
+    }
+
+    int16_t FootIKToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 0 );
+        if ( pInputNode != nullptr )
+        {
+            return pInputNode->Compile( context );
+        }
+
+        context.LogError( this, "Disconnected input pin on compatibility Foot IK node!" );
+        return InvalidIndex;
+    }
+
+    //-------------------------------------------------------------------------
+
+    SnapWeaponToolsNode::SnapWeaponToolsNode()
+        : FlowToolsNode()
+    {
+        CreateOutputPin( "Result", GraphValueType::Pose, true );
+        CreateInputPin( "Input", GraphValueType::Pose );
+        CreateInputPin( "Flashed Amount", GraphValueType::Float );
+        CreateInputPin( "Weapon Category", GraphValueType::ID );
+        CreateInputPin( "Weapon Type", GraphValueType::ID );
+    }
+
+    int16_t SnapWeaponToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 0 );
+        if ( pInputNode != nullptr )
+        {
+            return pInputNode->Compile( context );
+        }
+
+        context.LogError( this, "Disconnected input pin on compatibility Snap Weapon node!" );
+        return InvalidIndex;
+    }
 }

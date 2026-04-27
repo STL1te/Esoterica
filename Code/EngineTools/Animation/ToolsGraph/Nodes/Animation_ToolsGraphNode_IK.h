@@ -43,4 +43,94 @@ namespace EE::Animation
 
         virtual TypeSystem::TypeInfo const* GetVariationDataTypeInfo() const override { return IKRigToolsNode::Data::s_pTypeInfo; }
     };
+
+    //-------------------------------------------------------------------------
+
+    class AimCSToolsNode final : public FlowToolsNode
+    {
+        EE_REFLECT_TYPE( AimCSToolsNode );
+
+    public:
+
+        AimCSToolsNode();
+
+        virtual char const* GetTypeName() const override { return "Aim CS"; }
+        virtual char const* GetCategory() const override { return "Animation/Compatibility"; }
+        virtual TBitFlags<GraphType> GetAllowedParentGraphTypes() const override { return TBitFlags<GraphType>( GraphType::BlendTree ); }
+        virtual int16_t Compile( GraphCompilationContext& context ) const override;
+
+    private:
+
+        EE_REFLECT();
+        Seconds                                m_flActionBlendTimeSeconds = 0.4f;
+
+        EE_REFLECT();
+        Seconds                                m_flHandIKBlendInTimeSeconds = 0.3f;
+
+        EE_REFLECT();
+        Seconds                                m_flPlantingBlendTimeSeconds = 0.2f;
+    };
+
+    //-------------------------------------------------------------------------
+
+    class FootIKToolsNode final : public VariationDataToolsNode
+    {
+        EE_REFLECT_TYPE( FootIKToolsNode );
+
+    public:
+
+        struct Data final : public VariationDataToolsNode::Data
+        {
+            EE_REFLECT_TYPE( Data );
+
+        public:
+
+            EE_REFLECT();
+            StringID                            m_leftEffectorBoneName;
+
+            EE_REFLECT();
+            StringID                            m_rightEffectorBoneName;
+
+            EE_REFLECT();
+            Seconds                             m_flBlendTimeSeconds = 0.0f;
+        };
+
+    public:
+
+        FootIKToolsNode();
+
+        virtual char const* GetTypeName() const override { return "Foot IK"; }
+        virtual char const* GetCategory() const override { return "Animation/Compatibility"; }
+        virtual TBitFlags<GraphType> GetAllowedParentGraphTypes() const override { return TBitFlags<GraphType>( GraphType::BlendTree ); }
+        virtual int16_t Compile( GraphCompilationContext& context ) const override;
+
+    private:
+
+        virtual TypeSystem::TypeInfo const* GetVariationDataTypeInfo() const override { return FootIKToolsNode::Data::s_pTypeInfo; }
+
+    private:
+
+        EE_REFLECT();
+        bool                                   m_bIsTargetInWorldSpace = false;
+
+        // Valve stores this as an enum, but for compatibility loading we only need to preserve the token.
+        EE_REFLECT();
+        StringID                               m_blendMode;
+    };
+
+    //-------------------------------------------------------------------------
+
+    class SnapWeaponToolsNode final : public FlowToolsNode
+    {
+        EE_REFLECT_TYPE( SnapWeaponToolsNode );
+
+    public:
+
+        SnapWeaponToolsNode();
+
+        virtual char const* GetTypeName() const override { return "Snap Weapon"; }
+        virtual char const* GetCategory() const override { return "Animation/Compatibility"; }
+        virtual TBitFlags<GraphType> GetAllowedParentGraphTypes() const override { return TBitFlags<GraphType>( GraphType::BlendTree ); }
+        virtual int16_t Compile( GraphCompilationContext& context ) const override;
+    };
 }
