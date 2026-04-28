@@ -120,6 +120,47 @@ namespace EE::Animation
 
     //-------------------------------------------------------------------------
 
+    class FollowBoneToolsNode final : public VariationDataToolsNode
+    {
+        EE_REFLECT_TYPE( FollowBoneToolsNode );
+
+    public:
+
+        struct Data final : public VariationDataToolsNode::Data
+        {
+            EE_REFLECT_TYPE( Data );
+
+        public:
+
+            EE_REFLECT();
+            StringID                            m_boneName;
+
+            EE_REFLECT();
+            StringID                            m_followTargetBoneName;
+        };
+
+    public:
+
+        FollowBoneToolsNode();
+
+        virtual char const* GetTypeName() const override { return "Follow Bone"; }
+        virtual char const* GetCategory() const override { return "Animation/Compatibility"; }
+        virtual TBitFlags<GraphType> GetAllowedParentGraphTypes() const override { return TBitFlags<GraphType>( GraphType::BlendTree ); }
+        virtual int16_t Compile( GraphCompilationContext& context ) const override;
+
+    private:
+
+        virtual TypeSystem::TypeInfo const* GetVariationDataTypeInfo() const override { return FollowBoneToolsNode::Data::s_pTypeInfo; }
+
+    private:
+
+        // Valve stores this as an enum, but for compatibility loading we only need to preserve the token.
+        EE_REFLECT();
+        StringID                               m_mode;
+    };
+
+    //-------------------------------------------------------------------------
+
     class SnapWeaponToolsNode final : public FlowToolsNode
     {
         EE_REFLECT_TYPE( SnapWeaponToolsNode );

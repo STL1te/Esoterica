@@ -151,6 +151,30 @@ namespace EE::Animation
 
     //-------------------------------------------------------------------------
 
+    FollowBoneToolsNode::FollowBoneToolsNode()
+        : VariationDataToolsNode()
+    {
+        CreateOutputPin( "Result", GraphValueType::Pose, true );
+        CreateInputPin( "Input", GraphValueType::Pose );
+        CreateInputPin( "Enabled", GraphValueType::Bool );
+
+        m_defaultVariationData.CreateInstance( GetVariationDataTypeInfo() );
+    }
+
+    int16_t FollowBoneToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 0 );
+        if ( pInputNode != nullptr )
+        {
+            return pInputNode->Compile( context );
+        }
+
+        context.LogError( this, "Disconnected input pin on compatibility Follow Bone node!" );
+        return InvalidIndex;
+    }
+
+    //-------------------------------------------------------------------------
+
     SnapWeaponToolsNode::SnapWeaponToolsNode()
         : FlowToolsNode()
     {
