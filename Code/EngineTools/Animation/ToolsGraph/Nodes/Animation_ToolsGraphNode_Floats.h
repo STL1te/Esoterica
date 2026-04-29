@@ -277,4 +277,34 @@ namespace EE::Animation
         EE_REFLECT( Category = "Easing" );
         float                       m_easeTime = 0.3f; // How long should the ease take?
     };
+
+    //-------------------------------------------------------------------------
+
+    class FloatSpringToolsNode final : public FlowToolsNode
+    {
+        EE_REFLECT_TYPE( FloatSpringToolsNode );
+
+    public:
+
+        FloatSpringToolsNode();
+
+        virtual char const* GetTypeName() const override { return "Float Spring"; }
+        virtual char const* GetCategory() const override { return "Animation/Compatibility"; }
+        virtual TBitFlags<GraphType> GetAllowedParentGraphTypes() const override { return TBitFlags<GraphType>( GraphType::BlendTree, GraphType::ValueTree, GraphType::TransitionConduit ); }
+        virtual int16_t Compile( GraphCompilationContext& context ) const override;
+
+    private:
+
+        EE_REFLECT();
+        float                       m_flHertz = 4.0f;
+
+        EE_REFLECT();
+        float                       m_flDampingRatio = 0.7f;
+
+        EE_REFLECT();
+        bool                        m_bUseStartValue = true;
+
+        EE_REFLECT();
+        float                       m_flStartValue = 0.0f;
+    };
 }

@@ -260,6 +260,147 @@ namespace EE::Animation
 
     //-------------------------------------------------------------------------
 
+    IDBasedSelectorToolsNode::IDBasedSelectorToolsNode()
+        : FlowToolsNode()
+    {
+        CreateOutputPin( "Pose", GraphValueType::Pose, true );
+        CreateInputPin( "ID", GraphValueType::ID );
+        CreateInputPin( "Optional Fallback", GraphValueType::Pose );
+        CreateDynamicInputPin( "Option", GetPinTypeForValueType( GraphValueType::Pose ) );
+        CreateDynamicInputPin( "Option", GetPinTypeForValueType( GraphValueType::Pose ) );
+    }
+
+    int16_t IDBasedSelectorToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 1 );
+        if ( pInputNode != nullptr )
+        {
+            return pInputNode->Compile( context );
+        }
+
+        for ( int32_t i = 2; i < GetNumInputPins(); i++ )
+        {
+            pInputNode = GetConnectedInputNode<FlowToolsNode>( i );
+            if ( pInputNode != nullptr )
+            {
+                return pInputNode->Compile( context );
+            }
+        }
+
+        context.LogError( this, "Disconnected fallback and option pins on compatibility ID Based Selector node!" );
+        return InvalidIndex;
+    }
+
+    void IDBasedSelectorToolsNode::OnDynamicPinCreation( UUID const& pinID )
+    {
+        m_optionLabels.emplace_back( GetInputPin( pinID )->m_name );
+        RefreshDynamicPins();
+    }
+
+    void IDBasedSelectorToolsNode::PreDynamicPinDestruction( UUID const& pinID )
+    {
+        int32_t const pinToBeRemovedIdx = GetInputPinIndex( pinID );
+        EE_ASSERT( pinToBeRemovedIdx >= 2 );
+        m_optionLabels.erase( m_optionLabels.begin() + pinToBeRemovedIdx - 2 );
+    }
+
+    void IDBasedSelectorToolsNode::PostPropertyEdit( TypeSystem::PropertyInfo const* pPropertyEdited )
+    {
+        FlowToolsNode::PostPropertyEdit( pPropertyEdited );
+
+        if ( pPropertyEdited->m_ID == StringID( "m_optionLabels" ) )
+        {
+            RefreshDynamicPins();
+        }
+    }
+
+    void IDBasedSelectorToolsNode::RefreshDynamicPins()
+    {
+        for ( int32_t i = 2; i < GetNumInputPins(); i++ )
+        {
+            NodeGraph::Pin* pInputPin = GetInputPin( i );
+            pInputPin->m_name.sprintf( "%s", m_optionLabels[i - 2].empty() ? "Option" : m_optionLabels[i - 2].c_str() );
+        }
+    }
+
+    //-------------------------------------------------------------------------
+
+    IDBasedClipSelectorToolsNode::IDBasedClipSelectorToolsNode()
+        : FlowToolsNode()
+    {
+        CreateOutputPin( "Pose", GraphValueType::Pose, true );
+        CreateInputPin( "ID", GraphValueType::ID );
+        CreateInputPin( "Optional Fallback", GraphValueType::Pose );
+        CreateDynamicInputPin( "Option", GetPinTypeForValueType( GraphValueType::Pose ) );
+        CreateDynamicInputPin( "Option", GetPinTypeForValueType( GraphValueType::Pose ) );
+    }
+
+    int16_t IDBasedClipSelectorToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 1 );
+        if ( pInputNode != nullptr )
+        {
+            return pInputNode->Compile( context );
+        }
+
+        for ( int32_t i = 2; i < GetNumInputPins(); i++ )
+        {
+            pInputNode = GetConnectedInputNode<FlowToolsNode>( i );
+            if ( pInputNode != nullptr )
+            {
+                return pInputNode->Compile( context );
+            }
+        }
+
+        context.LogError( this, "Disconnected fallback and option pins on compatibility ID Based Clip Selector node!" );
+        return InvalidIndex;
+    }
+
+    void IDBasedClipSelectorToolsNode::OnDynamicPinCreation( UUID const& pinID )
+    {
+        m_optionLabels.emplace_back( GetInputPin( pinID )->m_name );
+        RefreshDynamicPins();
+    }
+
+    void IDBasedClipSelectorToolsNode::PreDynamicPinDestruction( UUID const& pinID )
+    {
+        int32_t const pinToBeRemovedIdx = GetInputPinIndex( pinID );
+        EE_ASSERT( pinToBeRemovedIdx >= 2 );
+        m_optionLabels.erase( m_optionLabels.begin() + pinToBeRemovedIdx - 2 );
+    }
+
+    bool IDBasedClipSelectorToolsNode::IsValidConnection( UUID const& inputPinID, FlowNode const* pOutputPinNode, UUID const& outputPinID ) const
+    {
+        int32_t const pinIdx = GetInputPinIndex( inputPinID );
+        if ( pinIdx >= 2 )
+        {
+            return Cast<FlowToolsNode>( pOutputPinNode )->IsAnimationClipReferenceNode();
+        }
+
+        return FlowToolsNode::IsValidConnection( inputPinID, pOutputPinNode, outputPinID );
+    }
+
+    void IDBasedClipSelectorToolsNode::PostPropertyEdit( TypeSystem::PropertyInfo const* pPropertyEdited )
+    {
+        FlowToolsNode::PostPropertyEdit( pPropertyEdited );
+
+        if ( pPropertyEdited->m_ID == StringID( "m_optionLabels" ) )
+        {
+            RefreshDynamicPins();
+        }
+    }
+
+    void IDBasedClipSelectorToolsNode::RefreshDynamicPins()
+    {
+        for ( int32_t i = 2; i < GetNumInputPins(); i++ )
+        {
+            NodeGraph::Pin* pInputPin = GetInputPin( i );
+            pInputPin->m_name.sprintf( "%s", m_optionLabels[i - 2].empty() ? "Option" : m_optionLabels[i - 2].c_str() );
+        }
+    }
+
+    //-------------------------------------------------------------------------
+
     ParameterizedSelectorToolsNode::ParameterizedSelectorToolsNode()
         : FlowToolsNode()
     {

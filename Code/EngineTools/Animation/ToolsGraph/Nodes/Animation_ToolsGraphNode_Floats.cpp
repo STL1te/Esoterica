@@ -709,4 +709,25 @@ namespace EE::Animation
             pInputPin->m_name.sprintf( "%s (%.2f)", option.m_name.empty() ? "Input" : option.m_name.c_str(), option.m_value );
         }
     }
+
+    //-------------------------------------------------------------------------
+
+    FloatSpringToolsNode::FloatSpringToolsNode()
+        : FlowToolsNode()
+    {
+        CreateOutputPin( "Result", GraphValueType::Float, true );
+        CreateInputPin( "Value", GraphValueType::Float );
+    }
+
+    int16_t FloatSpringToolsNode::Compile( GraphCompilationContext& context ) const
+    {
+        auto pInputNode = GetConnectedInputNode<FlowToolsNode>( 0 );
+        if ( pInputNode != nullptr )
+        {
+            return pInputNode->Compile( context );
+        }
+
+        context.LogError( this, "Disconnected input pin on compatibility Float Spring node!" );
+        return InvalidIndex;
+    }
 }
